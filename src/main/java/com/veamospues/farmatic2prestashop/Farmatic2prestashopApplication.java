@@ -4,9 +4,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class Farmatic2prestashopApplication {
-
+public class Farmatic2PrestashopApplication {
     public static void main(String[] args) {
-        SpringApplication.run(Farmatic2prestashopApplication.class, args);
+        SpringApplication.run(Farmatic2PrestashopApplication.class, args);
     }
 }

@@ -7,7 +7,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class Farmatic2prestashopApplicationTests {
+public class Farmatic2PrestashopStockAvailablesApplicationTests {
 
     @Test
     public void contextLoads() {

@@ -1,0 +1,60 @@
+camel:
+  springboot:
+    main-run-controller: true
+
+prestashop:
+  updateStockTemplate: >
+    <prestashop xmlns:xlink="http://www.w3.org/1999/xlink">
+    	<stock_available>
+    		<id>{ID}</id>
+    		<id_product>{PRODUCT_ID}</id_product>
+    		<id_product_attribute>{PRODUCT_ATTRIBUTE}</id_product_attribute>
+            <id_shop>{ID_SHOP}</id_shop>
+            <id_shop_group>{ID_SHOP_GROUP}</id_shop_group>
+    		<quantity>{STOCK}</quantity>
+    		<depends_on_stock>{DEPENDS_ON_STOCK}</depends_on_stock>
+    		<out_of_stock>{OUT_OF_STOCK}</out_of_stock>
+    	</stock_available>
+    </prestashop>
+
+spring:
+  datasource:
+    driver-class-name: net.sourceforge.jtds.jdbc.Driver
+    hikari:
+      connection-test-query: SELECT 1
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: validate
+      naming:
+        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+  batch:
+    job:
+      enabled: false
+    initialize-schema: never
+
+  profiles:
+    active: development
+
+
+sql:
+  stockVariations: >
+    SELECT DISTINCT *
+    FROM (
+        SELECT DISTINCT a.IdArticu as id, a.Descripcion as name, a.StockActual as stock
+        FROM LINEARECEP lr
+          INNER JOIN Recep r ON r.IdRecepcion = lr.IdRecepcion
+          INNER JOIN Articu a ON lr.XArt_IdArticu = a.IdArticu
+        WHERE
+        Hora >= DATEADD(minute, -11, GETDATE())
+          AND Hora <= GETDATE()
+      UNION
+        SELECT DISTINCT a.IdArticu, a.Descripcion, a.StockActual
+        FROM LineaVenta lv
+          INNER JOIN Venta v ON v.IdVenta= lv.IdVenta
+          INNER JOIN Articu a ON lv.Codigo = a.IdArticu
+        WHERE
+        FechaHora >= DATEADD(minute, -11, GETDATE())
+          AND FechaHora <= GETDATE()
+    ) AuxTbl
