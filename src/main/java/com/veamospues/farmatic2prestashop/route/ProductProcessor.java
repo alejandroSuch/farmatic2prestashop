@@ -18,6 +18,8 @@ public class ProductProcessor extends RouteBuilder {
     private static final String URI = "seda:productProcessor?multipleConsumers=true&concurrentConsumers=10";
     private static final String PRODUCT_HEADER = "product";
     private static final String STOCK_HEADER = "stock";
+    private static final String LOG_MESSAGE = "${in.header.product} won't be processed because it's not in prestashop";
+    private static final String SEDA_STOCK_UPDATER = "seda:stockUpdater";
 
     StockAvailableRepository repository;
     PrestashopConfiguration prestashopConfiguration;
@@ -28,9 +30,9 @@ public class ProductProcessor extends RouteBuilder {
                 .process(productToStockTemplate())
                 .choice()
                 .when(body().isNull())
-                .log("${in.header.product} won't be processed because it's not in prestashop")
+                .log(LOG_MESSAGE)
                 .otherwise()
-                .to("seda:stockUpdater")
+                .to(SEDA_STOCK_UPDATER)
                 .end()
         ;
     }

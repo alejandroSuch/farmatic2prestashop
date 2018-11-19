@@ -39,6 +39,9 @@ spring:
 
 
 sql:
+  allArticles: >
+    SELECT DISTINCT a.IdArticu as id, a.Descripcion as name, a.StockActual as stock
+    FROM Articu a;
   stockVariations: >
     SELECT DISTINCT *
     FROM (

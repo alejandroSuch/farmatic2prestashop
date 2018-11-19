@@ -25,11 +25,6 @@ public class StockAvailableRepository implements Processor {
     }
 
     public Optional<StockAvailable> findByProductReference(Integer productReference) {
-
-        if(!productReference.equals(965012)) {
-            return Optional.empty();
-        }
-
         return findByProductReference(String.format(PAD_LEFT_WITH_SIX_ZEROES, productReference));
     }
 
@@ -38,7 +33,7 @@ public class StockAvailableRepository implements Processor {
     }
 
     private void insert(ArrayList<String> item) {
-        String reference = String.format("%06d", parseInt(item.get(2)));
+        String reference = String.format(PAD_LEFT_WITH_SIX_ZEROES, parseInt(item.get(2)));
 
         StockAvailable stockAvailable = StockAvailable
                 .builder()

@@ -19,8 +19,13 @@ public class SqlQueriesConfiguration {
     private static final String WITH_BLANK_SPACE = " ";
 
     private String stockVariations;
+    private String allArticles;
 
     public void setStockVariations(String stockVariations) {
         this.stockVariations = stockVariations.replaceAll(LINE_BREAK, WITH_BLANK_SPACE).replaceAll(MULTIPLE_SPACES, WITH_BLANK_SPACE);
+    }
+
+    public void setAllArticles(String allArticles) {
+        this.allArticles = allArticles.replaceAll(LINE_BREAK, WITH_BLANK_SPACE).replaceAll(MULTIPLE_SPACES, WITH_BLANK_SPACE);
     }
 }

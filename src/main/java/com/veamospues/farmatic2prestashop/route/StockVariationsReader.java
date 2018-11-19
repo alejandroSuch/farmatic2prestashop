@@ -7,9 +7,10 @@ import org.springframework.stereotype.Component;
 
 @Component
 @AllArgsConstructor
-public class DatabaseReader extends RouteBuilder {
-    static final String ROUTE_ID = "DatabaseReader";
+public class StockVariationsReader extends RouteBuilder {
+    static final String ROUTE_ID = "StockVariationsReader";
     private static final String FIVE_MINUTES = "300000";
+    private static final String PRODUCT_PROCESSOR = "seda:productProcessor";
 
     private SqlQueriesConfiguration queries;
 
@@ -18,7 +19,7 @@ public class DatabaseReader extends RouteBuilder {
         from(uri()).routeId(ROUTE_ID)
                 .noAutoStartup()
                 .split(body()).streaming()
-                .to("seda:productProcessor")
+                .to(PRODUCT_PROCESSOR)
                 .end()
         ;
     }
