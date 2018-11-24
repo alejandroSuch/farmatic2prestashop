@@ -43,11 +43,13 @@ public class FullStockProcessor extends RouteBuilder {
     public void configure() throws Exception {
         from(uri()).routeId(ROUTE_ID)
                 .noAutoStartup()
+                .log(ROUTE_ID + " initialized")
                 .process(queryToResult())
                 .marshal(csv)
                 .to(outputFile())
                 .process(toStats())
                 .to(outputStats())
+                .log(ROUTE_ID + " finished")
                 .end()
         ;
     }
