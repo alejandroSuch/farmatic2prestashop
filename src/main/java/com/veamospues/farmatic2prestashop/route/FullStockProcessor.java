@@ -31,7 +31,7 @@ public class FullStockProcessor extends RouteBuilder {
     private static final String PROCESSED_HEADER = "Processed";
     private static final String UNPROCESSED_HEADER = "Unprocessed";
     private static final String DATE_HEADER = "Date";
-    public static final String DATE_PATTERN = "dd/MM/yyyy HH:mm:ss";
+    private static final String DATE_PATTERN = "dd/MM/yyyy HH:mm:ss";
 
     private SqlQueriesConfiguration queries;
     private StockAvailableRepository repository;
