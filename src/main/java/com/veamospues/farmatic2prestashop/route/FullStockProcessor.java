@@ -27,7 +27,7 @@ import static java.util.Arrays.asList;
 @AllArgsConstructor
 public class FullStockProcessor extends RouteBuilder {
     static final String ROUTE_ID = "FullStockProcessor";
-    private static final String ONE_HOUR = "10000";
+    private static final String FIVE_MINUTES = "300000";
     private static final String PROCESSED_HEADER = "Processed";
     private static final String UNPROCESSED_HEADER = "Unprocessed";
     private static final String DATE_HEADER = "Date";
@@ -112,6 +112,6 @@ public class FullStockProcessor extends RouteBuilder {
     }
 
     private String uri() {
-        return "sql://" + queries.getAllArticles() + "?outputType=StreamList&outputClass=com.veamospues.farmatic2prestashop.domain.Product&consumer.delay=" + ONE_HOUR;
+        return "sql://" + queries.getAllArticles() + "?outputType=StreamList&outputClass=com.veamospues.farmatic2prestashop.domain.Product&consumer.delay=" + FIVE_MINUTES;
     }
 }
