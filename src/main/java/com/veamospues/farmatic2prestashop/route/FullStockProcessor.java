@@ -87,7 +87,7 @@ public class FullStockProcessor extends RouteBuilder {
                 if (byProductReference.isPresent()) {
                     processed++;
                     StockAvailable stockAvailable = byProductReference.get();
-                    result.add(asList(stockAvailable.getIdProduct().toString(), product.getReference(), product.getStock()));
+                    result.add(csvRowFrom(product, stockAvailable));
                 } else {
                     unprocessed++;
                 }
@@ -99,6 +99,14 @@ public class FullStockProcessor extends RouteBuilder {
 
             exchange.getIn().setBody(result);
         };
+    }
+
+    private List<Object> csvRowFrom(Product product, StockAvailable stockAvailable) {
+        final String idProduct = stockAvailable.getIdProduct().toString();
+        final String reference = product.getReference();
+        final int stock = product.getStock() == 0 ? -1 : product.getStock();
+
+        return asList(idProduct, reference, stock);
     }
 
     private String uri() {
