@@ -10,7 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.sql.ResultSetIterator;
-import org.apache.camel.model.dataformat.CsvDataFormat;
+import org.apache.camel.dataformat.csv.CsvDataFormat;
 import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
@@ -75,6 +75,7 @@ public class FullStockProcessor extends RouteBuilder {
         return exchange -> {
             ResultSetIterator body = exchange.getIn().getBody(ResultSetIterator.class);
             ArrayList<List<Object>> result = new ArrayList<>();
+            result.add(asList("ID", "REFERENCE", "STOCK"));
 
             Integer processed = 0;
             Integer unprocessed = 0;
@@ -86,7 +87,7 @@ public class FullStockProcessor extends RouteBuilder {
                 if (byProductReference.isPresent()) {
                     processed++;
                     StockAvailable stockAvailable = byProductReference.get();
-                    result.add(asList(stockAvailable.getIdProduct(), product.getReference(), product.getStock()));
+                    result.add(asList(stockAvailable.getIdProduct().toString(), product.getReference(), product.getStock()));
                 } else {
                     unprocessed++;
                 }

@@ -5,7 +5,7 @@ import com.veamospues.farmatic2prestashop.domain.StockAvailableRepository;
 import lombok.AllArgsConstructor;
 import org.apache.camel.CamelContext;
 import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.model.dataformat.CsvDataFormat;
+import org.apache.camel.dataformat.csv.CsvDataFormat;
 import org.springframework.stereotype.Component;
 
 import static java.lang.String.format;
