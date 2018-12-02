@@ -15,7 +15,7 @@ import static java.lang.Integer.parseInt;
 public class StockAvailableRepository implements Processor {
     private static final String PAD_LEFT_WITH_SIX_ZEROES = "%06d";
 
-    Map<String, StockAvailable> database = new HashMap<>();
+    private Map<String, StockAvailable> database = new HashMap<>();
 
     @Override
     public void process(Exchange exchange) throws Exception {
