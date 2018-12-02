@@ -3,7 +3,6 @@ package com.veamospues.farmatic2prestashop.route;
 import com.veamospues.farmatic2prestashop.config.PrestashopConfiguration;
 import com.veamospues.farmatic2prestashop.domain.StockAvailableRepository;
 import lombok.AllArgsConstructor;
-import org.apache.camel.CamelContext;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.dataformat.csv.CsvDataFormat;
 import org.springframework.stereotype.Component;
@@ -19,7 +18,6 @@ public class ProductsFileReader extends RouteBuilder {
 
     private StockAvailableRepository stockAvailableRepository;
     private PrestashopConfiguration prestashopConfiguration;
-    private CamelContext camelContext;
     private CsvDataFormat csv;
 
     @Override
