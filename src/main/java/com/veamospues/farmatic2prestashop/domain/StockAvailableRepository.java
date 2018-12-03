@@ -28,7 +28,7 @@ public class StockAvailableRepository implements Processor {
         return findByProductReference(String.format(PAD_LEFT_WITH_SIX_ZEROES, productReference));
     }
 
-    public Optional<StockAvailable> findByProductReference(String productReference) {
+    private Optional<StockAvailable> findByProductReference(String productReference) {
         return Optional.ofNullable(database.get(productReference));
     }
 
