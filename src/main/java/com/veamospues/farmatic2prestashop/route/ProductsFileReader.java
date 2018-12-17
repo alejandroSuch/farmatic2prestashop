@@ -26,7 +26,9 @@ public class ProductsFileReader extends RouteBuilder {
                 .routeId(ROUTE_ID)
                 .unmarshal(csv)
                 .process(stockAvailableRepository)
+                .to(format("controlbus:route?routeId=%s&action=stop", StockVariationsReader.ROUTE_ID))
                 .to(format("controlbus:route?routeId=%s&action=start", StockVariationsReader.ROUTE_ID))
+                .to(format("controlbus:route?routeId=%s&action=stop", FullStockProcessor.ROUTE_ID))
                 .to(format("controlbus:route?routeId=%s&action=start", FullStockProcessor.ROUTE_ID))
                 .end()
         ;
