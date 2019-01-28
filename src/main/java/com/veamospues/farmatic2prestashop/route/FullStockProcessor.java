@@ -21,6 +21,7 @@ import java.util.Optional;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
+import static org.apache.commons.text.WordUtils.capitalizeFully;
 
 @Slf4j
 @Component
@@ -30,6 +31,7 @@ public class FullStockProcessor extends RouteBuilder {
     private static final String FIVE_MINUTES = "300000";
     private static final String PROCESSED_HEADER = "Processed";
     private static final String UNPROCESSED_HEADER = "Unprocessed";
+    private static final String PRODUCTS_WITH_DESCRIPTION_HEADER = "ProductsWithDescription";
     private static final String DATE_HEADER = "Date";
     private static final String DATE_PATTERN = "dd/MM/yyyy HH:mm:ss";
 
@@ -44,14 +46,18 @@ public class FullStockProcessor extends RouteBuilder {
         from(uri()).routeId(ROUTE_ID)
                 .noAutoStartup()
                 .log(ROUTE_ID + " initialized")
-                .process(queryToResult())
-                .marshal(csv)
-                .to(outputFile())
-                .process(toStats())
-                .to(outputStats())
+                .process(queryToResult()).marshal(csv).to(outputFile(false))
+                .process(toResultWithDescription()).marshal(csv).to(outputFile(true))
+                .process(toStats()).to(outputStats())
                 .log(ROUTE_ID + " finished")
                 .end()
         ;
+    }
+
+    private Processor toResultWithDescription() {
+        return exchange -> {
+            exchange.getIn().setBody(exchange.getIn().getHeader(PRODUCTS_WITH_DESCRIPTION_HEADER));
+        };
     }
 
     private Processor toStats() {
@@ -65,8 +71,8 @@ public class FullStockProcessor extends RouteBuilder {
         };
     }
 
-    private String outputFile() {
-        return "file:" + prestashopConfiguration.getCsvLocation() + "?fileName=full-stock.csv&fileExist=Override";
+    private String outputFile(boolean withDescription) {
+        return "file:" + prestashopConfiguration.getCsvLocation() + "?fileName=full-stock" + (withDescription ? "-with-description" : "") + ".csv&fileExist=Override";
     }
 
     private String outputStats() {
@@ -79,6 +85,9 @@ public class FullStockProcessor extends RouteBuilder {
             ArrayList<List<Object>> result = new ArrayList<>();
             result.add(asList("ID", "REFERENCE", "STOCK"));
 
+            ArrayList<List<Object>> resultWithDescription = new ArrayList<>();
+            resultWithDescription.add(asList("ID", "REFERENCE", "STOCK", "DESCRIPTION"));
+
             Integer processed = 0;
             Integer unprocessed = 0;
 
@@ -89,7 +98,8 @@ public class FullStockProcessor extends RouteBuilder {
                 if (byProductReference.isPresent()) {
                     processed++;
                     StockAvailable stockAvailable = byProductReference.get();
-                    result.add(csvRowFrom(product, stockAvailable));
+                    result.add(csvRowFrom(product, stockAvailable, false));
+                    resultWithDescription.add(csvRowFrom(product, stockAvailable, true));
                 } else {
                     unprocessed++;
                 }
@@ -98,17 +108,19 @@ public class FullStockProcessor extends RouteBuilder {
             exchange.getIn().setHeader(DATE_HEADER, new Date());
             exchange.getIn().setHeader(PROCESSED_HEADER, processed);
             exchange.getIn().setHeader(UNPROCESSED_HEADER, unprocessed);
+            exchange.getIn().setHeader(PRODUCTS_WITH_DESCRIPTION_HEADER, resultWithDescription);
 
             exchange.getIn().setBody(result);
         };
     }
 
-    private List<Object> csvRowFrom(Product product, StockAvailable stockAvailable) {
+    private List<Object> csvRowFrom(Product product, StockAvailable stockAvailable, boolean withDescription) {
         final String idProduct = stockAvailable.getIdProduct().toString();
         final String reference = product.getReference();
         final int stock = product.getStock() == 0 ? -1 : product.getStock();
+        final String description = capitalizeFully(product.getName());
 
-        return asList(idProduct, reference, stock);
+        return withDescription ? asList(idProduct, reference, stock, description) : asList(idProduct, reference, stock);
     }
 
     private String uri() {
