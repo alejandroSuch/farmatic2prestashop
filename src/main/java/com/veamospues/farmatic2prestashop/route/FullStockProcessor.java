@@ -11,6 +11,7 @@ import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.sql.ResultSetIterator;
 import org.apache.camel.dataformat.csv.CsvDataFormat;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
@@ -83,10 +84,10 @@ public class FullStockProcessor extends RouteBuilder {
         return exchange -> {
             ResultSetIterator body = exchange.getIn().getBody(ResultSetIterator.class);
             ArrayList<List<Object>> result = new ArrayList<>();
-            result.add(asList("ID", "REFERENCE", "STOCK"));
+            result.add(asList("ID", "REFERENCE", "STOCK", "EAN"));
 
             ArrayList<List<Object>> resultWithDescription = new ArrayList<>();
-            resultWithDescription.add(asList("ID", "REFERENCE", "STOCK", "DESCRIPTION"));
+            resultWithDescription.add(asList("ID", "REFERENCE", "STOCK", "DESCRIPTION", "EAN"));
 
             Integer processed = 0;
             Integer unprocessed = 0;
@@ -115,12 +116,13 @@ public class FullStockProcessor extends RouteBuilder {
     }
 
     private List<Object> csvRowFrom(Product product, StockAvailable stockAvailable, boolean withDescription) {
-        final String idProduct = stockAvailable.getIdProduct().toString();
+        final String idProduct = StringUtils.upperCase(stockAvailable.getIdProduct().toString());
         final String reference = product.getReference();
         final int stock = product.getStock() == 0 ? -1 : product.getStock();
-        final String description = capitalizeFully(product.getName());
+        final String description = product.getName();
+        final String ean = product.getEan();
 
-        return withDescription ? asList(idProduct, reference, stock, description) : asList(idProduct, reference, stock);
+        return withDescription ? asList(idProduct, reference, stock, description, ean) : asList(idProduct, reference, stock, ean);
     }
 
     private String uri() {

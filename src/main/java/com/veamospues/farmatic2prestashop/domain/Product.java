@@ -11,6 +11,7 @@ public class Product {
     Integer id;
     String name;
     Integer stock;
+    String ean;
 
     public String getReference() {
         return format("%06d", id);

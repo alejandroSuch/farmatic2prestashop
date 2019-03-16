@@ -40,8 +40,9 @@ spring:
 
 sql:
   allArticles: >
-    SELECT DISTINCT a.IdArticu as id, a.Descripcion as name, a.StockActual as stock
-    FROM Articu a;
+    SELECT DISTINCT a.IdArticu as id, a.Descripcion as name, a.StockActual as stock, s.Sinonimo as ean
+    FROM Articu a
+    LEFT JOIN Sinonimo s ON s.IdArticu = a.IdArticu  AND LEN(s.Sinonimo) = 13;
   stockVariations: >
     SELECT DISTINCT *
     FROM (

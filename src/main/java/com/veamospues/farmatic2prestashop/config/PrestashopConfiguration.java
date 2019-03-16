@@ -22,6 +22,7 @@ public class PrestashopConfiguration {
     private String stockAvailablesUrl;
     private String productsUrl;
     private String csvLocation;
+    private String reindexUrl;
 
 
     private String updateStockTemplate;
