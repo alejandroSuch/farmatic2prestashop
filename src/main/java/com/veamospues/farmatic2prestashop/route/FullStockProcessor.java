@@ -11,7 +11,6 @@ import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.sql.ResultSetIterator;
 import org.apache.camel.dataformat.csv.CsvDataFormat;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
@@ -22,7 +21,6 @@ import java.util.Optional;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
-import static org.apache.commons.text.WordUtils.capitalizeFully;
 
 @Slf4j
 @Component
@@ -116,7 +114,7 @@ public class FullStockProcessor extends RouteBuilder {
     }
 
     private List<Object> csvRowFrom(Product product, StockAvailable stockAvailable, boolean withDescription) {
-        final String idProduct = StringUtils.upperCase(stockAvailable.getIdProduct().toString());
+        final String idProduct = stockAvailable.getIdProduct().toString();
         final String reference = product.getReference();
         final int stock = product.getStock() == 0 ? -1 : product.getStock();
         final String description = product.getName();
