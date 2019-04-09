@@ -11,6 +11,7 @@ import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.sql.ResultSetIterator;
 import org.apache.camel.dataformat.csv.CsvDataFormat;
+import org.apache.commons.text.WordUtils;
 import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
@@ -21,6 +22,7 @@ import java.util.Optional;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
+import static org.apache.commons.text.WordUtils.capitalizeFully;
 
 @Slf4j
 @Component
@@ -41,7 +43,7 @@ public class FullStockProcessor extends RouteBuilder {
 
 
     @Override
-    public void configure() throws Exception {
+    public void configure() {
         from(uri()).routeId(ROUTE_ID)
                 .noAutoStartup()
                 .log(ROUTE_ID + " initialized")
@@ -117,7 +119,7 @@ public class FullStockProcessor extends RouteBuilder {
         final String idProduct = stockAvailable.getIdProduct().toString();
         final String reference = product.getReference();
         final int stock = product.getStock() == 0 ? -1 : product.getStock();
-        final String description = product.getName();
+        final String description = capitalizeFully(product.getName());
         final String ean = product.getEan();
 
         return withDescription ? asList(idProduct, reference, stock, description, ean) : asList(idProduct, reference, stock, ean);
