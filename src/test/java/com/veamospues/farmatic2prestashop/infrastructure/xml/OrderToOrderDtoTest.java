@@ -25,5 +25,4 @@ public class OrderToOrderDtoTest {
       throw new RuntimeException(e);
     }
   }
-
 }
