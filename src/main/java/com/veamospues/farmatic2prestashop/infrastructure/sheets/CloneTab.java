@@ -26,7 +26,6 @@ public class CloneTab {
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
-
   }
 
   private void rename(Integer sheetId, String withTitle) throws IOException {
