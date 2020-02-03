@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<prestashop xmlns:xlink="http://www.w3.org/1999/xlink">
+  <orders>
+    <order id="995" xlink:href="https://www.prestashop.com/api/orders/995"/>
+    <order id="996" xlink:href="https://www.prestashop.com/api/orders/996"/>
+    <order id="997" xlink:href="https://www.prestashop.com/api/orders/997"/>
+    <order id="998" xlink:href="https://www.prestashop.com/api/orders/998"/>
+    <order id="999" xlink:href="https://www.prestashop.com/api/orders/999"/>
+    <order id="1000" xlink:href="https://www.prestashop.com/api/orders/1000"/>
+    <order id="1001" xlink:href="https://www.prestashop.com/api/orders/1001"/>
+    <order id="1002" xlink:href="https://www.prestashop.com/api/orders/1002"/>
+    <order id="1003" xlink:href="https://www.prestashop.com/api/orders/1003"/>
+    <order id="1004" xlink:href="https://www.prestashop.com/api/orders/1004"/>
+    <order id="1005" xlink:href="https://www.prestashop.com/api/orders/1005"/>
+  </orders>
+</prestashop>

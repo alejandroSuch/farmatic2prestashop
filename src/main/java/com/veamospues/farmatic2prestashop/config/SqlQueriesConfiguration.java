@@ -20,6 +20,7 @@ public class SqlQueriesConfiguration {
 
     private String stockVariations;
     private String allArticles;
+    private String pucsInDate;
 
     public void setStockVariations(String stockVariations) {
         this.stockVariations = stockVariations.replaceAll(LINE_BREAK, WITH_BLANK_SPACE).replaceAll(MULTIPLE_SPACES, WITH_BLANK_SPACE);
@@ -27,5 +28,9 @@ public class SqlQueriesConfiguration {
 
     public void setAllArticles(String allArticles) {
         this.allArticles = allArticles.replaceAll(LINE_BREAK, WITH_BLANK_SPACE).replaceAll(MULTIPLE_SPACES, WITH_BLANK_SPACE);
+    }
+
+    public void setPucsInDate(String pucsInDate) {
+        this.pucsInDate = pucsInDate.replaceAll(LINE_BREAK, WITH_BLANK_SPACE).replaceAll(MULTIPLE_SPACES, WITH_BLANK_SPACE);
     }
 }
