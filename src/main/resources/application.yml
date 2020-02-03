@@ -61,4 +61,19 @@ sql:
         WHERE
         FechaHora >= DATEADD(minute, -11, GETDATE())
           AND FechaHora <= GETDATE()
-    ) AuxTbl
+    ) AuxTbl;
+  pucsInDate: >
+    SELECT a.idArticu, coalesce(Aux1.PucNew, a.Puc) as Puc
+    FROM Articu a
+    LEFT JOIN (
+        SELECT c.IdArticu, c.FechaHora, c.PucNew
+        FROM ChgPuc c
+        INNER JOIN (
+            SELECT IdArticu, MAX(FechaHora) as FechaHora
+            FROM ChgPuc
+            WHERE FechaHora < CONVERT(datetime, '${body.invoiceDate().toString()}', 126)
+              And IdArticu in (${headers.productIds})
+            GROUP BY IdArticu
+        ) as Aux2 on Aux2.IdArticu = c.IdArticu AND Aux2.FechaHora = c.FechaHora
+    ) as Aux1 on Aux1.idArticu = a.IdArticu
+    WHERE a.idArticu in (${headers.productIds});
