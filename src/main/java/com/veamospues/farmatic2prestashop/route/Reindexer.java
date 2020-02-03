@@ -10,28 +10,29 @@ import org.springframework.stereotype.Component;
 @Component
 @AllArgsConstructor
 public class Reindexer extends RouteBuilder {
-    private static final int ZERO = 0;
-    private static final String ROUTE_IR = "Reindexer";
-    private static final String URI = "timer://ReindexerTimer?fixedRate=true&period=4h";
 
-    private PrestashopConfiguration prestashopConfiguration;
+  private static final int ZERO = 0;
+  private static final String ROUTE_IR = "Reindexer";
+  private static final String URI = "timer://ReindexerTimer?fixedRate=true&period=4h";
 
-    @Override
-    public void configure() {
-        from(URI)
-          .routeId(ROUTE_IR)
-          .log("Reindexing...")
-          .process(exchange -> {
-              Unirest.setTimeouts(ZERO, ZERO);
+  private PrestashopConfiguration prestashopConfiguration;
 
-              HttpResponse<String> response = Unirest
-                .get(prestashopConfiguration.getReindexUrl())
-                .asString();
+  @Override
+  public void configure() {
+    from(URI)
+      .routeId(ROUTE_IR)
+      .log("Reindexing...")
+      .process(exchange -> {
+        Unirest.setTimeouts(ZERO, ZERO);
 
-              exchange.getIn().setHeader("result", response.getStatus());
-          })
-          .log("Reindexing finished with status ${in.header.result}")
-        ;
-    }
+        HttpResponse<String> response = Unirest
+          .get(prestashopConfiguration.getReindexUrl())
+          .asString();
+
+        exchange.getIn().setHeader("result", response.getStatus());
+      })
+      .log("Reindexing finished with status ${in.header.result}")
+    ;
+  }
 
 }
