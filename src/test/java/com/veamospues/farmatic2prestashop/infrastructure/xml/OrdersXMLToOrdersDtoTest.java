@@ -43,6 +43,6 @@ public class OrdersXMLToOrdersDtoTest {
     final TemporalAccessor parse = formatter.parse("2016-05-20 09:51:26");
     final LocalDateTime from = LocalDateTime.from(parse);
 
-    System.out.println("");
+    System.out.println();
   }
 }
