@@ -79,7 +79,6 @@ public class ProcessOrder extends RouteBuilder {
             .map(Product::code)
             .collect(Collectors.joining(", "))
         );
-
     };
   }
 
