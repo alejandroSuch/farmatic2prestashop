@@ -7,19 +7,18 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import lombok.AllArgsConstructor;
+import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.file.GenericFile;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
-@AllArgsConstructor
 public class GetFirstAndLastDates extends RouteBuilder {
 
   private static final String ROUTE_ID = "Order stats - Get dates";
-  private static final String FIVE_MINUTES = "300000";
   private static final String FILE_DATE_PATTERN = "yyyy-MM-dd HH:mm:ss";
   private static final String HEADER_FROM = "from";
   private static final String HEADER_TO = "to";
@@ -27,7 +26,19 @@ public class GetFirstAndLastDates extends RouteBuilder {
   private static final String WITH_BLANK = "";
   private static final String LAST_DATE_FILE = "lastDate.txt";
 
+  private String processOrdersInterval;
   private PrestashopConfiguration prestashopConfiguration;
+
+  public GetFirstAndLastDates(
+    CamelContext context,
+    @Value("${process.orders.interval}")
+      String processOrdersInterval,
+    PrestashopConfiguration prestashopConfiguration
+  ) {
+    super(context);
+    this.processOrdersInterval = processOrdersInterval;
+    this.prestashopConfiguration = prestashopConfiguration;
+  }
 
   @Override
   public void configure() {
@@ -44,7 +55,7 @@ public class GetFirstAndLastDates extends RouteBuilder {
       "?fileName=" +
       LAST_DATE_FILE +
       "&noop=true&idempotent=false&delay=" +
-      FIVE_MINUTES;
+      processOrdersInterval;
   }
 
   private Processor getFirstAndLastDate() {
