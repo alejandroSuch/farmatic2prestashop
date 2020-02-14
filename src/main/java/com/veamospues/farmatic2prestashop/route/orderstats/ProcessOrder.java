@@ -58,6 +58,7 @@ public class ProcessOrder extends RouteBuilder {
       .unmarshal(new JaxbDataFormat(JAXBContext.newInstance(Prestashop.class)))
       .setBody(simple("${body.toOrder()}"))
       .process(productIdsToHeaders())
+      .process(invoiceDateToHeaders())
       .process(appendSheetIdAndCodesToHeaders())
       .enrich()
       .simple("sql://" + queries.getPucsInDate())
@@ -78,6 +79,19 @@ public class ProcessOrder extends RouteBuilder {
             .stream()
             .map(Product::code)
             .collect(Collectors.joining(", "))
+        );
+    };
+  }
+
+  private Processor invoiceDateToHeaders() {
+    return exchange -> {
+      final Order order = exchange.getIn().getBody(Order.class);
+      final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+
+      exchange.getIn()
+        .setHeader(
+          "invoiceDate",
+          order.invoiceDate().format(formatter)
         );
     };
   }

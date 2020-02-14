@@ -173,10 +173,7 @@ public class Order {
   }
 
   public com.veamospues.farmatic2prestashop.dto.Order toOrder() {
-
     final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-    final TemporalAccessor parse = formatter.parse("2016-05-20 09:51:26");
-    final LocalDateTime from = LocalDateTime.from(parse);
 
     return new com.veamospues.farmatic2prestashop.dto.Order(
       this.getId(),

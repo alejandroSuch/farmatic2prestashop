@@ -71,7 +71,7 @@ sql:
         INNER JOIN (
             SELECT IdArticu, MAX(FechaHora) as FechaHora
             FROM ChgPuc
-            WHERE FechaHora < CONVERT(datetime, '${body.invoiceDate().toString()}', 126)
+            WHERE FechaHora < CONVERT(datetime, '${headers.invoiceDate}', 126)
               And IdArticu in (${headers.productIds})
             GROUP BY IdArticu
         ) as Aux2 on Aux2.IdArticu = c.IdArticu AND Aux2.FechaHora = c.FechaHora
