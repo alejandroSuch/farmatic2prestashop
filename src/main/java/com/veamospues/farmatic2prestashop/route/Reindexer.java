@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 public class Reindexer extends RouteBuilder {
 
   private static final int ZERO = 0;
-  private static final String ROUTE_IR = "Reindexer";
+  private static final String ROUTE_ID = "Reindexer";
   private static final String URI = "timer://ReindexerTimer?fixedRate=true&period=4h";
 
   private PrestashopConfiguration prestashopConfiguration;
@@ -20,7 +20,7 @@ public class Reindexer extends RouteBuilder {
   @Override
   public void configure() {
     from(URI)
-      .routeId(ROUTE_IR)
+      .routeId(ROUTE_ID)
       .log("Reindexing...")
       .process(exchange -> {
         Unirest.setTimeouts(ZERO, ZERO);
