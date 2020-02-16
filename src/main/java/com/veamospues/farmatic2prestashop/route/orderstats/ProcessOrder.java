@@ -161,7 +161,10 @@ public class ProcessOrder extends RouteBuilder {
   private ArrayList<List<Object>> valuesFrom(Order order) {
     final ArrayList<List<Object>> data = new ArrayList<>();
 
-    order.products().forEach(product -> {
+    for (int i = 0; i < order.products().size(); i++) {
+      final Product product = order.products().get(i);
+      final boolean isFirstRow = i == 0;
+
       data.add(Arrays.asList(
         order.code(),
         product.code(),
@@ -170,33 +173,17 @@ public class ProcessOrder extends RouteBuilder {
         product.taxes(),
         product.unitPrice(),
         product.puc(),
-        "",
-        "",
-        "",
-        "",
-        "=(INDIRECT(\"R[0]C[-6]\"; FALSE) - INDIRECT(\"R[0]C[-5]\"; FALSE)) * INDIRECT(\"R[0]C[-8]\"; FALSE)",
-        "",
-        ""
-      ));
-    });
+        "=INDIRECT(\"R[0]C[-2]\"; FALSE) * INDIRECT(\"R[0]C[-4]\"; FALSE)",
+        "=INDIRECT(\"R[0]C[-2]\"; FALSE) * INDIRECT(\"R[0]C[-5]\"; FALSE)",
+        "=INDIRECT(\"R[0]C[-2]\"; FALSE) - INDIRECT(\"R[0]C[-1]\"; FALSE)",
+        isFirstRow ? order.ownDeliveryCost() : "",
+        isFirstRow ? order.customerDeliveryCost() : "",
+        isFirstRow ? order.boxCost() : "",
+        isFirstRow ? order.discount() : ""
+        )
+      );
+    }
 
-    data.add(Arrays.asList(
-      order.code(),
-      "",
-      "",
-      "",
-      "",
-      order.total(),
-      "",
-      order.ownDeliveryCost(),
-      order.customerDeliveryCost(),
-      order.boxCost(),
-      order.discount(),
-      "=SUM(INDIRECT(\"R[-" + order.products().size()
-        + "]C[0]\"; FALSE):INDIRECT(\"R[-1]C[0]\"; FALSE))",
-      "=INDIRECT(\"R[0]C[-1]\"; FALSE) - INDIRECT(\"R[0]C[-2]\"; FALSE) - INDIRECT(\"R[0]C[-3]\"; FALSE) + INDIRECT(\"R[0]C[-4]\"; FALSE) - INDIRECT(\"R[0]C[-5]\"; FALSE)",
-      "=INDIRECT(\"R[0]C[-1]\"; FALSE) / INDIRECT(\"R[0]C[-8]\"; FALSE) * 100"
-    ));
     return data;
   }
 
