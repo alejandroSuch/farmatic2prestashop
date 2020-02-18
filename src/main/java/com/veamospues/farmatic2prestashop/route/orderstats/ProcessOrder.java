@@ -160,12 +160,14 @@ public class ProcessOrder extends RouteBuilder {
 
   private ArrayList<List<Object>> valuesFrom(Order order) {
     final ArrayList<List<Object>> data = new ArrayList<>();
+    final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     for (int i = 0; i < order.products().size(); i++) {
       final Product product = order.products().get(i);
       final boolean isFirstRow = i == 0;
 
       data.add(Arrays.asList(
+        order.invoiceDate().format(formatter),
         order.code(),
         product.code(),
         product.description(),
@@ -178,6 +180,7 @@ public class ProcessOrder extends RouteBuilder {
         "=INDIRECT(\"R[0]C[-2]\"; FALSE) - INDIRECT(\"R[0]C[-1]\"; FALSE)",
         isFirstRow ? order.ownDeliveryCost() : "",
         isFirstRow ? order.customerDeliveryCost() : "",
+        isFirstRow ? order.reimbursement() : "",
         isFirstRow ? order.boxCost() : "",
         isFirstRow ? order.discount() : ""
         )

@@ -18,6 +18,8 @@ public class Order {
 
   int id_customer;
 
+  double total_paid_real;
+
   double total_paid_tax_incl;
 
   double total_paid_tax_excl;
@@ -76,6 +78,15 @@ public class Order {
 
   public void setId_customer(int id_customer) {
     this.id_customer = id_customer;
+  }
+
+  @XmlElement
+  public double getTotal_paid_real() {
+    return total_paid_real;
+  }
+
+  public void setTotal_paid_real(double total_paid_real) {
+    this.total_paid_real = total_paid_real;
   }
 
   @XmlElement
@@ -183,7 +194,8 @@ public class Order {
       BigDecimal.valueOf(this.getTotal_discounts_tax_incl()),
       LocalDateTime.from(formatter.parse(getInvoice_date())),
       LocalDateTime.from(formatter.parse(getDelivery_date())),
-      getAssociations().toProductList()
+      getAssociations().toProductList(),
+      BigDecimal.valueOf(this.getTotal_paid_real())
     );
   }
 }

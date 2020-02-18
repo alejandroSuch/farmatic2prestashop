@@ -19,6 +19,7 @@ public class Order implements Serializable {
   private int id;
   private String code;
   private BigDecimal total;
+  private BigDecimal totalPaid;
   private BigDecimal customerDeliveryCost;
   private BigDecimal ownDeliveryCost;
   private BigDecimal boxCost;
@@ -31,7 +32,8 @@ public class Order implements Serializable {
     int id, String code, BigDecimal total,
     BigDecimal customerDeliveryCost, BigDecimal discount,
     LocalDateTime invoiceDate, LocalDateTime deliveryDate,
-    List<Product> products
+    List<Product> products,
+    BigDecimal totalPaid
   ) {
     this.id = id;
     this.code = code;
@@ -43,6 +45,7 @@ public class Order implements Serializable {
     this.invoiceDate = invoiceDate;
     this.deliveryDate = deliveryDate;
     this.products = products;
+    this.totalPaid = totalPaid;
   }
 
   public void addProduct(Product product) {
@@ -61,6 +64,17 @@ public class Order implements Serializable {
     }
 
     return result;
+  }
+
+  public BigDecimal reimbursement() {
+    return this.totalPaid()
+      .subtract(
+        this.products.stream()
+          .map(product -> product.unitPrice().multiply(BigDecimal.valueOf(product.quantity())))
+          .reduce(BigDecimal.ZERO, BigDecimal::add)
+          .add(this.customerDeliveryCost())
+          .subtract(this.discount())
+      );
   }
 
   public BigDecimal orderBenefit() {
