@@ -150,17 +150,33 @@ public class ProcessOrder extends RouteBuilder {
     return exchange -> {
       final String sheetName = exchange.getIn().getHeader("sheetName", String.class);
       final Order order = exchange.getIn().getBody(Order.class);
+      int retries = 0;
+      boolean done = false;
 
-      getTabs.sheets()
-        .spreadsheets()
-        .values()
-        .append(
-          getTabs.spreadsheetId(),
-          sheetName + "!A:N",
-          new ValueRange().setValues(valuesFrom(order))
-        )
-        .setValueInputOption("USER_ENTERED")
-        .execute();
+      do {
+        final ArrayList<List<Object>> data = valuesFrom(order);
+
+        try {
+          getTabs.sheets()
+            .spreadsheets()
+            .values()
+            .append(
+              getTabs.spreadsheetId(),
+              sheetName + "!A:N",
+              new ValueRange().setValues(data)
+            )
+            .setValueInputOption("USER_ENTERED")
+            .execute();
+
+          done = true;
+        } catch(Exception e) {
+          retries++;
+
+          if(5 == retries) {
+            log.error("Error inserting in " + sheetName + ". Data is: " + data.toString(), e);
+          }
+        }
+      } while (!done && retries < 5);
 
       exchange.getOut().setBody(order);
     };
