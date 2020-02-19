@@ -63,17 +63,31 @@ sql:
           AND FechaHora <= GETDATE()
     ) AuxTbl;
   pucsInDate: >
-    SELECT a.idArticu, coalesce(Aux1.PucNew, a.Puc) as Puc
+    SELECT a.IdArticu, COALESCE(Aux2.Puc, a.Puc) as Puc
     FROM Articu a
     LEFT JOIN (
-        SELECT c.IdArticu, c.FechaHora, c.PucNew
-        FROM ChgPuc c
-        INNER JOIN (
-            SELECT IdArticu, MAX(FechaHora) as FechaHora
-            FROM ChgPuc
-            WHERE FechaHora <= CONVERT(datetime, '${headers.invoiceDate}', 126)
-              And IdArticu in (${headers.productIds})
-            GROUP BY IdArticu
-        ) as Aux2 on Aux2.IdArticu = c.IdArticu AND Aux2.FechaHora = c.FechaHora
-    ) as Aux1 on Aux1.idArticu = a.IdArticu
-    WHERE a.idArticu in (${headers.productIds});
+      SELECT Aux3.IdArticu, Aux3.FechaHora, Aux3.Puc
+      FROM (
+        SELECT IdArticu, FechaHora, PucNew as Puc
+        FROM ChgPuc
+        UNION
+        SELECT L.XArt_IdArticu as IdArticu, R.Hora as FechaHora, L.ImportePuc as Puc
+        FROM Recep R
+        INNER JOIN LINEARECEP L on R.IdRecepcion = L.IdRecepcion
+      ) Aux3
+      INNER JOIN (
+        SELECT Aux1.IdArticu as IdArticu, MAX(Aux1.FechaHora) as FechaHora
+        FROM (
+          SELECT IdArticu, FechaHora
+          FROM ChgPuc
+          UNION
+          SELECT L.XArt_IdArticu as IdArticu, R.Hora as FechaHora
+          FROM Recep R
+          INNER JOIN LINEARECEP L on R.IdRecepcion = L.IdRecepcion
+        ) Aux1
+        WHERE Aux1.IdArticu IN (${headers.productIds})
+        GROUP BY Aux1.IdArticu
+      ) Aux4 ON Aux3.IdArticu = Aux4.IdArticu AND Aux3.FechaHora = Aux4.FechaHora
+      WHERE Aux3.FechaHora <= CONVERT(datetime, '${headers.invoiceDate}', 126)
+    ) Aux2 ON Aux2.IdArticu = a.IdArticu
+    WHERE a.IdArticu IN (${headers.productIds})
