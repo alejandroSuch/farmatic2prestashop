@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
@@ -29,6 +30,7 @@ import org.apache.camel.processor.aggregate.AggregationStrategy;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedCaseInsensitiveMap;
 
+@Slf4j
 @Component
 @AllArgsConstructor
 public class ProcessOrder extends RouteBuilder {
@@ -121,17 +123,23 @@ public class ProcessOrder extends RouteBuilder {
   private AggregationStrategy addPucToProducts() {
     return (oldExchange, newExchange) -> {
       final Order order = oldExchange.getIn().getBody(Order.class);
-      final ArrayList pucs = newExchange.getIn().getBody(ArrayList.class);
+      final ArrayList<LinkedCaseInsensitiveMap> pucs = newExchange.getIn().getBody(ArrayList.class);
 
       pucs.forEach(it -> {
-        final LinkedCaseInsensitiveMap result = (LinkedCaseInsensitiveMap) it;
+        final String idArticu = (String) it.get("idArticu");
+        final Double puc = (Double) it.get("Puc");
 
-        final String idArticu = (String) result.get("idArticu");
-        final Double puc = (Double) result.get("Puc");
-
-        order
-          .product(idArticu)
-          .puc(BigDecimal.valueOf(puc));
+        try {
+          Optional
+            .ofNullable(order.product(idArticu))
+            .orElse(order.product(Integer.valueOf(idArticu).toString()))
+            .puc(BigDecimal.valueOf(puc));
+        } catch (Exception exception) {
+          log.error(
+            "Error al añadir el articulo " + idArticu + " al pedido " + order.id() + "(" + order.invoiceDate() + ")",
+            exception
+          );
+        }
       });
 
       return oldExchange;
