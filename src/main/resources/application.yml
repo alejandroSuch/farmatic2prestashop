@@ -86,6 +86,7 @@ sql:
           INNER JOIN LINEARECEP L on R.IdRecepcion = L.IdRecepcion
         ) Aux1
         WHERE Aux1.IdArticu IN (${headers.productIds})
+          AND Aux1.FechaHora <= CONVERT(datetime, '${headers.invoiceDate}', 126)
         GROUP BY Aux1.IdArticu
       ) Aux4 ON Aux3.IdArticu = Aux4.IdArticu AND Aux3.FechaHora = Aux4.FechaHora
       WHERE Aux3.FechaHora <= CONVERT(datetime, '${headers.invoiceDate}', 126)
