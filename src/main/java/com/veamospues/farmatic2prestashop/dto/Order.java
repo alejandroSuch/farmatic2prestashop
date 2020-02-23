@@ -1,12 +1,9 @@
 package com.veamospues.farmatic2prestashop.dto;
 
-import static java.util.stream.Collectors.toList;
-
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 import lombok.Getter;
@@ -92,7 +89,10 @@ public class Order implements Serializable {
 
   public Product product(String code) {
     return products.stream()
-      .filter(product -> product.code().equals(code))
+      .filter(
+        product -> product.code().equals(code) ||
+          Integer.valueOf(product.code()).equals(Integer.valueOf(code))
+      )
       .findFirst()
       .orElse(null);
   }

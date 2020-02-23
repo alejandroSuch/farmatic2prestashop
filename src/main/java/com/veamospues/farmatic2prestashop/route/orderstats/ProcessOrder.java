@@ -130,9 +130,7 @@ public class ProcessOrder extends RouteBuilder {
         final Double puc = (Double) it.get("Puc");
 
         try {
-          Optional
-            .ofNullable(order.product(idArticu))
-            .orElse(order.product(Integer.valueOf(idArticu).toString()))
+          order.product(idArticu)
             .puc(BigDecimal.valueOf(puc));
         } catch (Exception exception) {
           log.error(
