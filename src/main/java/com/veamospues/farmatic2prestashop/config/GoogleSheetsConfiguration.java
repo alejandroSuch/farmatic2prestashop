@@ -63,4 +63,20 @@ public class GoogleSheetsConfiguration {
   ) {
     return new CloneTab(getTabs, templateName);
   }
+
+  @Bean
+  public GetTabs getPromofarmaSpreadsheetTabs(
+    Sheets sheets,
+    @Value("${google.spreadsheet.promofarma.id}") String spreadsheetId
+  ) {
+    return new GetTabs(sheets, spreadsheetId);
+  }
+
+  @Bean
+  public CloneTab clonePromofarmaTabFromTemplate(
+    GetTabs getPromofarmaSpreadsheetTabs,
+    @Value("${google.spreadsheet.template.name}") String templateName
+  ) {
+    return new CloneTab(getPromofarmaSpreadsheetTabs, templateName);
+  }
 }
