@@ -20,11 +20,17 @@ import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.sql.ResultSetIterator;
 import org.apache.camel.dataformat.csv.CsvDataFormat;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
 @AllArgsConstructor
+@ConditionalOnProperty(
+  value="route.products.enabled",
+  havingValue = "true",
+  matchIfMissing = true
+)
 public class FullStockProcessor extends RouteBuilder {
   static final String ROUTE_ID = "FullStockProcessor";
   private static final String FIVE_MINUTES = "300000";

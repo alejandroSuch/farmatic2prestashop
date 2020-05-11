@@ -27,12 +27,18 @@ import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.converter.jaxb.JaxbDataFormat;
 import org.apache.camel.processor.aggregate.AggregationStrategy;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedCaseInsensitiveMap;
 
 @Slf4j
 @Component
 @AllArgsConstructor
+@ConditionalOnProperty(
+  value="route.orderstats.enabled",
+  havingValue = "true",
+  matchIfMissing = true
+)
 public class ProcessOrder extends RouteBuilder {
 
   private static final String ROUTE_ID = "Order stats - Process order";

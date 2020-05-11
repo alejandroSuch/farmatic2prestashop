@@ -5,10 +5,16 @@ import com.mashape.unirest.http.Unirest;
 import com.veamospues.farmatic2prestashop.config.PrestashopConfiguration;
 import lombok.AllArgsConstructor;
 import org.apache.camel.builder.RouteBuilder;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 @Component
 @AllArgsConstructor
+@ConditionalOnProperty(
+  value="route.reindexer.enabled",
+  havingValue = "true",
+  matchIfMissing = true
+)
 public class Reindexer extends RouteBuilder {
 
   private static final int ZERO = 0;

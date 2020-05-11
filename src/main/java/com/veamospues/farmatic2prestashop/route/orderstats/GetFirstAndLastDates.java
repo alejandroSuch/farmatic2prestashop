@@ -13,9 +13,15 @@ import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.file.GenericFile;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 @Component
+@ConditionalOnProperty(
+  value="route.orderstats.enabled",
+  havingValue = "true",
+  matchIfMissing = true
+)
 public class GetFirstAndLastDates extends RouteBuilder {
 
   private static final String ROUTE_ID = "Order stats - Get dates";

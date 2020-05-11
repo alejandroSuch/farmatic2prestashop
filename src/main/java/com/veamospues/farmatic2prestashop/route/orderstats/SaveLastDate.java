@@ -9,10 +9,16 @@ import lombok.AllArgsConstructor;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 @Component
 @AllArgsConstructor
+@ConditionalOnProperty(
+  value="route.orderstats.enabled",
+  havingValue = "true",
+  matchIfMissing = true
+)
 public class SaveLastDate extends RouteBuilder {
 
   private static final String ROUTE_ID = "Order stats - Save last date";
