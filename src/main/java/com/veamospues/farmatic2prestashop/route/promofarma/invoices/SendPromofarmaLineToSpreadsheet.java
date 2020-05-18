@@ -3,6 +3,7 @@ package com.veamospues.farmatic2prestashop.route.promofarma.invoices;
 import com.google.api.services.sheets.v4.model.ValueRange;
 import com.veamospues.farmatic2prestashop.infrastructure.sheets.CloneTab;
 import com.veamospues.farmatic2prestashop.infrastructure.sheets.GetTabs;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -50,11 +51,13 @@ public class SendPromofarmaLineToSpreadsheet extends RouteBuilder {
           Objects.isNull(line.code()) ? line.ean() : line.code(),
           line.name(),
           line.units(),
-          line.totalGrossWithoutVat(),
-          line.vat(),
-          line.fee(),
+          BigDecimal.valueOf(line.vat()).divide(BigDecimal.valueOf(100)),
           line.totalGrossWithVat(),
-          line.puc()
+          "=INDIRECT(\"R[0]C[-1]\"; FALSE) / INDIRECT(\"R[0]C[-3]\"; FALSE)",
+          Objects.isNull(line.puc()) ? "" : line.puc(),
+          "=INDIRECT(\"R[0]C[-2]\"; FALSE) - INDIRECT(\"R[0]C[-1]\"; FALSE)",
+          "=INDIRECT(\"R[0]C[-1]\"; FALSE) * INDIRECT(\"R[0]C[-6]\"; FALSE)",
+          "=(INDIRECT(\"R[0]C[-4]\"; FALSE) - INDIRECT(\"R[0]C[-3]\"; FALSE)) / INDIRECT(\"R[0]C[-3]\"; FALSE)"
         ));
 
         do {
@@ -65,7 +68,7 @@ public class SendPromofarmaLineToSpreadsheet extends RouteBuilder {
               .values()
               .append(
                 getPromofarmaSpreadsheetTabs.spreadsheetId(),
-                sheetName + "!A:H",
+                sheetName + "!A:L",
                 new ValueRange().setValues(data)
               )
               .setValueInputOption("USER_ENTERED")
