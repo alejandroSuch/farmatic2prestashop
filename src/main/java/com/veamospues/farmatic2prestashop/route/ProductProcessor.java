@@ -8,10 +8,16 @@ import java.util.Optional;
 import lombok.AllArgsConstructor;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 @Component
 @AllArgsConstructor
+@ConditionalOnProperty(
+  value="route.products.enabled",
+  havingValue = "true",
+  matchIfMissing = true
+)
 public class ProductProcessor extends RouteBuilder {
 
   private static final String ROUTE_ID = "ProductProcessor";

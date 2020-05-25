@@ -7,9 +7,15 @@ import com.veamospues.farmatic2prestashop.domain.StockAvailableRepository;
 import org.apache.camel.CamelContext;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.dataformat.csv.CsvDataFormat;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 @Component
+@ConditionalOnProperty(
+  value="route.products.enabled",
+  havingValue = "true",
+  matchIfMissing = true
+)
 public class ProductsFileReader extends RouteBuilder {
 
   private static final String ROUTE_ID = "ProductsFileReader";

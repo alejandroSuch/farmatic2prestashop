@@ -37,6 +37,15 @@ spring:
   profiles:
     active: development
 
+route:
+  orderstats:
+    enabled: true
+  reindexer:
+    enabled: true
+  products:
+    enabled: true
+  promofarma-invoices:
+    enabled: true
 
 sql:
   allArticles: >

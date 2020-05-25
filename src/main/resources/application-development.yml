@@ -1,0 +1,9 @@
+route:
+  orderstats:
+    enabled: false
+  reindexer:
+    enabled: false
+  products:
+    enabled: false
+  promofarma-invoices:
+    enabled: true

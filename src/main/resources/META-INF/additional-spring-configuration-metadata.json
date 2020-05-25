@@ -1,0 +1,24 @@
+{
+  "properties": [
+    {
+      "name": "route.products.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Enable product processing route"
+    },
+    {
+      "name": "route.reindexer.enabled",
+      "type": "java.lang.String",
+      "description": "Enable reindexing."
+    },
+    {
+      "name": "route.orderstats.enabled",
+      "type": "java.lang.String",
+      "description": "Update benefit analysis spreadsheet"
+    },
+    {
+      "name": "route.promofarma-invoices.enabled",
+      "type": "java.lang.String",
+      "description": "Update promofarma invoices spreadsheet"
+    }
+  ]
+}
