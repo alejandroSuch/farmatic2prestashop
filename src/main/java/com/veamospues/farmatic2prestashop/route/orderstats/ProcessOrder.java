@@ -48,7 +48,7 @@ public class ProcessOrder extends RouteBuilder {
 
   private PrestashopConfiguration prestashopConfiguration;
   private GetTabs getTabs;
-  private CloneTab cloneTab;
+  private CloneTab cloneTabFromTemplate;
   private SqlQueriesConfiguration queries;
 
   @Override
@@ -112,7 +112,7 @@ public class ProcessOrder extends RouteBuilder {
 
       final Integer sheetId = Optional
         .ofNullable(this.getTabs.idOf(sheetName))
-        .orElseGet(() -> cloneTab.fromTemplate(sheetName));
+        .orElseGet(() -> cloneTabFromTemplate.fromTemplate(sheetName));
 
       final String codes = order.products()
         .stream()
