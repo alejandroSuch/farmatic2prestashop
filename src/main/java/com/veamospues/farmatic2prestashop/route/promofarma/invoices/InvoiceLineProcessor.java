@@ -22,7 +22,7 @@ public class InvoiceLineProcessor extends RouteBuilder {
 
   public final static String ROUTE_ID = "InvoiceLineProcessor";
   private static final Pattern PATTERN = Pattern.compile(
-    "^(\\d{6,13})\\s(.*)\\s(\\d+)\\s(\\d+(,?\\d+)?\\.\\d+)\\s€\\s(\\d+)\\s%\\s(\\d+(,?\\d+)?\\.\\d+)\\s€\\s(\\d+(,?\\d+)?\\.\\d+)\\s€$"
+    "^(\\d{6,13})\\s(.*)\\s(\\d+)\\s(\\d+(,?\\d+)?\\.\\d+)\\s€\\s(\\d+)%\\s?(\\d+(,?\\d+)?\\.\\d+)\\s€\\s(\\d+(,?\\d+)?\\.\\d+)\\s€$"
   );
   private static final String URI = "seda:processPromofarmaLine?concurrentConsumers=1&multipleConsumers=false";
   private static final String COMMA = ",";
@@ -34,8 +34,9 @@ public class InvoiceLineProcessor extends RouteBuilder {
       .id(ROUTE_ID)
       .process(this::toLine)
       .choice()
-        .when().simple("${body.hasCode()} == true").to("seda:enrichPromofarmaLineWithPuc?blockWhenFull=true")
-        .otherwise().to("seda:enrichPromofarmaLineWithCode?blockWhenFull=true");
+      .when().simple("${body.hasCode()} == true")
+      .to("seda:enrichPromofarmaLineWithPuc?blockWhenFull=true")
+      .otherwise().to("seda:enrichPromofarmaLineWithCode?blockWhenFull=true");
   }
 
   private void toLine(Exchange exchange) {
@@ -52,9 +53,7 @@ public class InvoiceLineProcessor extends RouteBuilder {
       matcher.group(1),
       matcher.group(2),
       Integer.parseInt(matcher.group(3)),
-      new BigDecimal(matcher.group(4).replaceAll(COMMA, WITH_EMPTY)),
       Integer.parseInt(matcher.group(6)),
-      new BigDecimal(matcher.group(7).replaceAll(COMMA, WITH_EMPTY)),
       new BigDecimal(matcher.group(9).replaceAll(COMMA, WITH_EMPTY))
     );
 
