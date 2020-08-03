@@ -47,8 +47,6 @@ public class PromofarmaInvoiceProcessor extends RouteBuilder {
   }
 
   private void process(Exchange exchange) {
-    System.out.println("");
-
     final Pattern pattern = Pattern.compile("(\\d{6,13}\\s+)", Pattern.MULTILINE);
     final String body = exchange.getIn()
       .getBody(String.class)
