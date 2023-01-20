@@ -1,6 +1,7 @@
-FROM microsoft/mssql-server-linux:2017-GDR
+FROM mcr.microsoft.com/mssql/server:2017-latest
 ENV ACCEPT_EULA Y
 ENV SA_PASSWORD AdministradoR001
+ENV MSSQL_SA_PASSWORD AdministradoR001
 
 COPY ./entrypoint.sh /usr/src/app/entrypoint.sh
 COPY ./import-data.sh /usr/src/app/import-data.sh
