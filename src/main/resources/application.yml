@@ -74,6 +74,15 @@ sql:
         WHERE
         FechaHora >= DATEADD(minute, -11, GETDATE())
           AND FechaHora <= GETDATE()
+      UNION
+        SELECT DISTINCT a.IdArticu, a.Descripcion, aa.StockActual
+        FROM AlmHisTraspaso ht
+          INNER JOIN Articu a ON ht.IdArticu = a.IdArticu
+          INNER JOIN AlmArticu aa ON aa.IdArticu = a.IdArticu AND aa.IdAlmacen = %d
+        WHERE
+          (ht.IdAlmOri = %d OR ht.IdAlmDes = %d)
+          AND ht.FecHisTraspaso >= DATEADD(minute, -11, GETDATE())
+          AND ht.FecHisTraspaso <= GETDATE()
     ) AuxTbl;
   pucsInDate: >
     SELECT a.IdArticu, COALESCE(Aux2.Puc, a.Puc) as Puc
