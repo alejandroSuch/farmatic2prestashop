@@ -47,7 +47,8 @@ public class FullStockProcessor extends RouteBuilder {
 
   @Override
   public void configure() {
-    from(uri()).routeId(ROUTE_ID)
+
+    fromF(uri(), queries.getWarehouseId()).routeId(ROUTE_ID)
       .noAutoStartup()
       .log(ROUTE_ID + " initialized")
       .process(queryToResult()).marshal(csv).to(outputFile(false))

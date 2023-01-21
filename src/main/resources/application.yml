@@ -48,25 +48,29 @@ route:
     enabled: true
 
 sql:
+  warehouseId: 1
   allArticles: >
-    SELECT DISTINCT a.IdArticu as id, a.Descripcion as name, a.StockActual as stock, s.Sinonimo as ean
+    SELECT DISTINCT a.IdArticu as id, a.Descripcion as name, aa.StockActual as stock, s.Sinonimo as ean
     FROM Articu a
-    LEFT JOIN Sinonimo s ON s.IdArticu = a.IdArticu  AND LEN(s.Sinonimo) = 13;
+    LEFT JOIN Sinonimo s ON s.IdArticu = a.IdArticu  AND LEN(s.Sinonimo) = 13
+    INNER JOIN AlmArticu aa ON aa.IdArticu = a.IdArticu AND aa.IdAlmacen = %d;
   stockVariations: >
     SELECT DISTINCT *
     FROM (
-        SELECT DISTINCT a.IdArticu as id, a.Descripcion as name, a.StockActual as stock
+        SELECT DISTINCT a.IdArticu as id, a.Descripcion as name, aa.StockActual as stock
         FROM LINEARECEP lr
           INNER JOIN Recep r ON r.IdRecepcion = lr.IdRecepcion
           INNER JOIN Articu a ON lr.XArt_IdArticu = a.IdArticu
+          INNER JOIN AlmArticu aa ON aa.IdArticu = a.IdArticu AND aa.IdAlmacen = %d
         WHERE
         Hora >= DATEADD(minute, -11, GETDATE())
           AND Hora <= GETDATE()
       UNION
-        SELECT DISTINCT a.IdArticu, a.Descripcion, a.StockActual
+        SELECT DISTINCT a.IdArticu, a.Descripcion, aa.StockActual
         FROM LineaVenta lv
-          INNER JOIN Venta v ON v.IdVenta= lv.IdVenta
+          INNER JOIN Venta v ON v.IdVenta = lv.IdVenta
           INNER JOIN Articu a ON lv.Codigo = a.IdArticu
+          INNER JOIN AlmArticu aa ON aa.IdArticu = a.IdArticu AND aa.IdAlmacen = %d
         WHERE
         FechaHora >= DATEADD(minute, -11, GETDATE())
           AND FechaHora <= GETDATE()

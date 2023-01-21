@@ -23,7 +23,7 @@ public class StockVariationsReader extends RouteBuilder {
 
   @Override
   public void configure() {
-    from(uri()).routeId(ROUTE_ID)
+    fromF(uri(), queries.getWarehouseId(), queries.getWarehouseId()).routeId(ROUTE_ID)
       .noAutoStartup()
       .split(body()).streaming()
       .to(PRODUCT_PROCESSOR)

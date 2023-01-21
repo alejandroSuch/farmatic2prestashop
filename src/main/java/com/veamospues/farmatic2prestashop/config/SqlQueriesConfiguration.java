@@ -22,6 +22,8 @@ public class SqlQueriesConfiguration {
     private String allArticles;
     private String pucsInDate;
 
+    private int warehouseId;
+
     public void setStockVariations(String stockVariations) {
         this.stockVariations = stockVariations.replaceAll(LINE_BREAK, WITH_BLANK_SPACE).replaceAll(MULTIPLE_SPACES, WITH_BLANK_SPACE);
     }
@@ -32,5 +34,9 @@ public class SqlQueriesConfiguration {
 
     public void setPucsInDate(String pucsInDate) {
         this.pucsInDate = pucsInDate.replaceAll(LINE_BREAK, WITH_BLANK_SPACE).replaceAll(MULTIPLE_SPACES, WITH_BLANK_SPACE);
+    }
+
+    public void setWarehouseId(int warehouseId) {
+        this.warehouseId = warehouseId;
     }
 }
