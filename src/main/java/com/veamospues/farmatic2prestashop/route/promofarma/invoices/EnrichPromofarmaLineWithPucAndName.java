@@ -18,11 +18,11 @@ import org.springframework.util.LinkedCaseInsensitiveMap;
   havingValue = "true",
   matchIfMissing = true
 )
-public class EnrichPromofarmaLineWithPuc extends RouteBuilder {
+public class EnrichPromofarmaLineWithPucAndName extends RouteBuilder {
 
-  private final static String ROUTE_ID = "EnrichPromofarmaLineWithPuc";
-  private static final String URI = "seda:enrichPromofarmaLineWithPuc?concurrentConsumers=1&multipleConsumers=false";
-  private final static String QUERY = "SELECT a.Puc as puc "
+  private final static String ROUTE_ID = "EnrichPromofarmaLineWithPucAndName";
+  private static final String URI = "seda:EnrichPromofarmaLineWithPucAndName?concurrentConsumers=1&multipleConsumers=false";
+  private final static String QUERY = "SELECT a.Puc as puc, a.Descripcion as name "
     + "FROM Articu a "
     + "WHERE a.IdArticu = :#code";
 
@@ -44,6 +44,7 @@ public class EnrichPromofarmaLineWithPuc extends RouteBuilder {
 
       if (!rows.isEmpty()) {
         line.changePuc(BigDecimal.valueOf((Double) rows.get(0).get("puc")));
+        line.changeName((String) rows.get(0).get("name"));
       }
 
       return oldExchange;

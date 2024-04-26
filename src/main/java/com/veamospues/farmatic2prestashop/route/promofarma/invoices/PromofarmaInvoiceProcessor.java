@@ -1,17 +1,22 @@
 package com.veamospues.farmatic2prestashop.route.promofarma.invoices;
 
-import com.veamospues.farmatic2prestashop.config.PromofarmaConfiguration;
-import java.util.ArrayList;
+import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Objects;
 import java.util.stream.Collectors;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.model.DataFormatDefinition;
+import org.apache.camel.model.dataformat.CsvDataFormat;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
+
+import com.veamospues.farmatic2prestashop.config.PromofarmaConfiguration;
+
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
@@ -31,53 +36,52 @@ public class PromofarmaInvoiceProcessor extends RouteBuilder {
 
   @Override
   public void configure() throws Exception {
+    DataFormatDefinition csv = new CsvDataFormat(";");
+
     from(uri())
       .id(ROUTE_ID)
-      .convertBodyTo(String.class)
+      .unmarshal(csv)
       .process(this::process)
       .split(body())
       .streaming()
-      .to("seda:processPromofarmaLine?blockWhenFull=true");
+      .to("seda:EnrichPromofarmaLineWithPucAndName?blockWhenFull=true");
   }
 
   private String uri() {
     return "file://" +
       promofarmaConfiguration.getInvoicesLocation() + "?" +
-      "flatten=true&delay=60000";
+      "flatten=true&delay=5000";
   }
 
   private void process(Exchange exchange) {
-    final Pattern pattern = Pattern.compile("(\\d{6,13}\\s+)", Pattern.MULTILINE);
-    final String body = exchange.getIn()
-      .getBody(String.class)
-      .replaceAll(LINE_BREAK, WITH_BLANK_SPACE)
-      .replaceAll("CN / EAN13 Producto Unidades Total Bruto sin IVA IVA Importe IVA Total IVA incl ", "")
-      .replaceAll("TOTAL FACTURA (.*)", "")
-      .trim();
-    final Matcher matcher = pattern.matcher(body);
+    final List<List<String>> data = (List<List<String>>) exchange.getIn().getBody();
 
-    List<String> lines = new ArrayList<>();
+    List<Line> lines = data
+      .stream()
+      .map((List<String>line) -> {
+        if (!"SALE".equals(line.get(0))) {
+          return null;
+        }
 
-    StringBuilder sb = new StringBuilder();
-    int position = 0;
-    while(matcher.find()) {
-      sb.append(body.substring(position, matcher.start()));
+        return new Line(
+          line.get(2),
+          "", // NOMBRE DE PRODUCTO NO PROPORCIONADO 
+          Integer.parseInt(line.get(3)), 
+          Integer.parseInt(line.get(5)), 
+          new BigDecimal(line.get(6).replaceAll(",", "."))
+        );
+      })
+      .filter(it -> Objects.nonNull(it))
+      .collect(Collectors.toList())
+    ;
 
-      if(position != 0) {
-        lines.add(sb.toString().trim());
-        sb.setLength(0);
-      }
-
-      sb.append(matcher.group());
-      position = matcher.end();
-    }
-    sb.append(body.substring(position));
-    lines.add(sb.toString());
-
-    final String collect = lines.stream()
-      .collect(Collectors.joining("\n"));
-
-    exchange.getOut().setHeader("file", exchange.getIn().getHeader("CamelFileNameOnly", String.class).split("\\.")[0]);
+    exchange.getOut()
+      .setHeader(
+        "file",
+        exchange.getIn()
+          .getHeader("CamelFileNameOnly", String.class)
+          .split("\\.")[0]
+      );
     exchange.getOut().setBody(lines);
   }
 }

@@ -26,3 +26,5 @@
 BACKUP.DAT
 .mvn
 .vscode
+
+database/

@@ -36,7 +36,7 @@ public class EnrichPromofarmaLineWithCode extends RouteBuilder {
       .simple("sql:" + QUERY)
       .aggregationStrategy(changeLineCode())
       .choice()
-        .when().simple("${body.hasCode()} == true").to("seda:enrichPromofarmaLineWithPuc?blockWhenFull=true")
+        .when().simple("${body.hasCode()} == true").to("seda:EnrichPromofarmaLineWithPucAndName?blockWhenFull=true")
         .otherwise().to("seda:sendPromofarmaLineToSpreadsheet?blockWhenFull=true");
   }
 

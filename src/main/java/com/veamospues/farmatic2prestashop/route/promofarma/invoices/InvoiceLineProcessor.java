@@ -35,7 +35,7 @@ public class InvoiceLineProcessor extends RouteBuilder {
       .process(this::toLine)
       .choice()
       .when().simple("${body.hasCode()} == true")
-      .to("seda:enrichPromofarmaLineWithPuc?blockWhenFull=true")
+      .to("seda:EnrichPromofarmaLineWithPucAndName?blockWhenFull=true")
       .otherwise().to("seda:enrichPromofarmaLineWithCode?blockWhenFull=true");
   }
 

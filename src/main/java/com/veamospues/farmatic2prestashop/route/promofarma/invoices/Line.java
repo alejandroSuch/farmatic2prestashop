@@ -38,6 +38,10 @@ public class Line {
     this.puc = puc;
   }
 
+  public void changeName(String name) {
+    this.name = name;
+  }
+
   public void changeCode(String code) {
     this.code = code;
   }
