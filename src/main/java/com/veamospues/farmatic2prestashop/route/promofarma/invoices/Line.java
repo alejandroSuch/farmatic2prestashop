@@ -14,24 +14,23 @@ public class Line {
   private String ean;
   private String name;
   private Integer units;
-  private Integer vat;
+  private BigDecimal vat;
   private BigDecimal totalGrossWithVat;
   private BigDecimal puc;
 
   public Line(
     String codeOrEan,
-    String name,
     Integer units,
-    Integer vat,
+    BigDecimal vat,
     BigDecimal totalGrossWithVat
   ) {
     this.code = codeOrEan.length() == 13 ? null : codeOrEan;
     this.ean = codeOrEan.length() == 13 ? codeOrEan : null;
-    this.name = name;
     this.units = units;
     this.vat = vat;
     this.totalGrossWithVat = totalGrossWithVat;
     this.puc = null;
+    this.name = "";
   }
 
   public void changePuc(BigDecimal puc) {

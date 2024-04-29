@@ -51,7 +51,7 @@ public class SendPromofarmaLineToSpreadsheet extends RouteBuilder {
           Objects.isNull(line.code()) ? line.ean() : line.code(),
           line.name(),
           line.units(),
-          BigDecimal.valueOf(line.vat()).divide(BigDecimal.valueOf(100)),
+          line.vat().divide(BigDecimal.valueOf(100)),
           line.totalGrossWithVat(),
           "=INDIRECT(\"R[0]C[-1]\"; FALSE) / INDIRECT(\"R[0]C[-3]\"; FALSE)",
           Objects.isNull(line.puc()) ? "" : line.puc(),

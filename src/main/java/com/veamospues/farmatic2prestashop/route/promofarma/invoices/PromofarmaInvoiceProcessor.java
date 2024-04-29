@@ -31,6 +31,8 @@ public class PromofarmaInvoiceProcessor extends RouteBuilder {
   static final String ROUTE_ID = "PromofarmaInvoiceProcessor";
   public static final String WITH_BLANK_SPACE = " ";
   public static final String LINE_BREAK = "\\r\\n";
+  private static final String COMMA = ",";
+  private static final String WITH_DOT = ".";
 
   private final PromofarmaConfiguration promofarmaConfiguration;
 
@@ -44,7 +46,10 @@ public class PromofarmaInvoiceProcessor extends RouteBuilder {
       .process(this::process)
       .split(body())
       .streaming()
-      .to("seda:EnrichPromofarmaLineWithPucAndName?blockWhenFull=true");
+      .choice()
+      .when().simple("${body.hasCode()} == true")
+      .to("seda:EnrichPromofarmaLineWithPucAndName?blockWhenFull=true")
+      .otherwise().to("seda:enrichPromofarmaLineWithCode?blockWhenFull=true");
   }
 
   private String uri() {
@@ -65,10 +70,9 @@ public class PromofarmaInvoiceProcessor extends RouteBuilder {
 
         return new Line(
           line.get(2),
-          "", // NOMBRE DE PRODUCTO NO PROPORCIONADO 
           Integer.parseInt(line.get(3)), 
-          Integer.parseInt(line.get(5)), 
-          new BigDecimal(line.get(6).replaceAll(",", "."))
+          new BigDecimal(line.get(5).replaceAll(COMMA, WITH_DOT)), 
+          new BigDecimal(line.get(6).replaceAll(COMMA, WITH_DOT))
         );
       })
       .filter(it -> Objects.nonNull(it))
@@ -82,6 +86,7 @@ public class PromofarmaInvoiceProcessor extends RouteBuilder {
           .getHeader("CamelFileNameOnly", String.class)
           .split("\\.")[0]
       );
+
     exchange.getOut().setBody(lines);
   }
 }
