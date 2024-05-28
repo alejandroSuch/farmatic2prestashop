@@ -63,18 +63,13 @@ public class PromofarmaInvoiceProcessor extends RouteBuilder {
 
     List<Line> lines = data
       .stream()
-      .map((List<String>line) -> {
-        if (!"SALE".equals(line.get(0))) {
-          return null;
-        }
-
-        return new Line(
-          line.get(2),
-          Integer.parseInt(line.get(3)), 
-          new BigDecimal(line.get(5).replaceAll(COMMA, WITH_DOT)), 
-          new BigDecimal(line.get(6).replaceAll(COMMA, WITH_DOT))
-        );
-      })
+      .filter((List<String>line) -> "SALE".equals(line.get(0)))
+      .map((List<String>line) -> new Line(
+        line.get(2),
+        Integer.parseInt(line.get(3)), 
+        new BigDecimal(line.get(5).replaceAll(COMMA, WITH_DOT)), 
+        new BigDecimal(line.get(6).replaceAll(COMMA, WITH_DOT))
+      ))
       .filter(it -> Objects.nonNull(it))
       .collect(Collectors.toList())
     ;
