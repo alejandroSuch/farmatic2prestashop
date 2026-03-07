@@ -39,19 +39,12 @@ public class ProcessOrders extends RouteBuilder {
           "filter[delivery_date]=[${in.header.from},${in.header.to}]&filter[current_state]=4&sort=[delivery_date_ASC]"
         )
       )
-      .to(orders())
+      .to(prestashopConfiguration.getOrdersUrl() + "?authMethod=Basic&authUsername=" + prestashopConfiguration.getApiToken() + "&authPassword=&authenticationPreemptive=true")
       .unmarshal(new JaxbDataFormat(JAXBContext.newInstance(Prestashop.class)))
       .setBody(simple("body.orderIds"))
       .split(body()).streaming()
       .setBody(simple("${body.id}"))
       .to("seda:processOrder?blockWhenFull=true")
     ;
-  }
-
-  private String orders() {
-    return prestashopConfiguration.getOrdersUrl() +
-      "?authMethod=Basic&authUsername=" +
-      prestashopConfiguration.getApiToken() +
-      "&authPassword=";
   }
 }

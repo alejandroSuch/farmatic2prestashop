@@ -58,11 +58,7 @@ public class ProcessOrder extends RouteBuilder {
       .id(ROUTE_ID)
       .setHeader(Exchange.HTTP_METHOD, simple(HTTP_METHOD_GET))
       .setHeader(Exchange.HTTP_URI, simple(prestashopConfiguration.getOrdersUrl() + "/${body}"))
-      .to(
-        "http://orderDetail?authMethod=Basic&authUsername=" +
-          prestashopConfiguration.getApiToken() +
-          "&authPassword="
-      )
+      .to("http://orderDetail?authMethod=Basic&authUsername=" + prestashopConfiguration.getApiToken() + "&authPassword=&authenticationPreemptive=true")
       .unmarshal(new JaxbDataFormat(JAXBContext.newInstance(Prestashop.class)))
       .setBody(simple("${body.toOrder()}"))
       .process(productIdsToHeaders())

@@ -43,7 +43,7 @@ route:
   reindexer:
     enabled: true
   products:
-    enabled: true
+    enabled: false
   promofarma-invoices:
     enabled: true
 
