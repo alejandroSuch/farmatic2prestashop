@@ -3,11 +3,10 @@ package com.veamospues.farmatic2prestashop.route.orderstats;
 import com.mashape.unirest.http.Unirest;
 import com.veamospues.farmatic2prestashop.config.PrestashopConfiguration;
 import com.veamospues.farmatic2prestashop.infrastructure.xml.orders.Prestashop;
-import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import lombok.AllArgsConstructor;
-import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.converter.jaxb.JaxbDataFormat;
@@ -43,17 +42,16 @@ public class ProcessOrders extends RouteBuilder {
 
   private Processor fetchOrders() {
     return exchange -> {
-      String query = "filter[delivery_date]=[" + exchange.getIn().getHeader("from") + "," + exchange.getIn().getHeader("to") + "]&filter[current_state]=4&sort=[delivery_date_ASC]";
-      String response = Unirest
+      InputStream response = Unirest
         .get(prestashopConfiguration.getOrdersUrl())
         .basicAuth(prestashopConfiguration.getApiToken(), EMPTY_STRING)
         .queryString("filter[delivery_date]", "[" + exchange.getIn().getHeader("from") + "," + exchange.getIn().getHeader("to") + "]")
         .queryString("filter[current_state]", "4")
         .queryString("sort", "[delivery_date_ASC]")
-        .asString()
+        .asBinary()
         .getBody();
 
-      exchange.getIn().setBody(new ByteArrayInputStream(response.getBytes()));
+      exchange.getIn().setBody(response);
     };
   }
 }

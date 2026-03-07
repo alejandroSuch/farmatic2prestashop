@@ -11,6 +11,7 @@ import com.veamospues.farmatic2prestashop.infrastructure.xml.order.Prestashop;
 import com.mashape.unirest.http.Unirest;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.io.ObjectOutputStream;
 import java.math.BigDecimal;
 import java.time.format.DateTimeFormatter;
@@ -75,13 +76,13 @@ public class ProcessOrder extends RouteBuilder {
   private Processor fetchOrder() {
     return exchange -> {
       String orderId = exchange.getIn().getBody(String.class);
-      String response = Unirest
+      InputStream response = Unirest
         .get(prestashopConfiguration.getOrdersUrl() + "/" + orderId)
         .basicAuth(prestashopConfiguration.getApiToken(), EMPTY_STRING)
-        .asString()
+        .asBinary()
         .getBody();
 
-      exchange.getIn().setBody(new ByteArrayInputStream(response.getBytes()));
+      exchange.getIn().setBody(response);
     };
   }
 
