@@ -8,6 +8,7 @@ import com.veamospues.farmatic2prestashop.dto.Product;
 import com.veamospues.farmatic2prestashop.infrastructure.sheets.CloneTab;
 import com.veamospues.farmatic2prestashop.infrastructure.sheets.GetTabs;
 import com.veamospues.farmatic2prestashop.infrastructure.xml.order.Prestashop;
+import com.mashape.unirest.http.Unirest;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectOutputStream;
@@ -44,7 +45,7 @@ public class ProcessOrder extends RouteBuilder {
   private static final String ROUTE_ID = "Order stats - Process order";
   private static final int FIVE_SECONDS = 5000;
   private static final String TAB_NAME_PATTERN = "yyyy/MM";
-  private static final String HTTP_METHOD_GET = "GET";
+  private static final String EMPTY_STRING = "";
 
   private PrestashopConfiguration prestashopConfiguration;
   private GetTabs getTabs;
@@ -56,9 +57,7 @@ public class ProcessOrder extends RouteBuilder {
 
     from("seda:processOrder?concurrentConsumers=1&multipleConsumers=false")
       .id(ROUTE_ID)
-      .setHeader(Exchange.HTTP_METHOD, simple(HTTP_METHOD_GET))
-      .setHeader(Exchange.HTTP_URI, simple(prestashopConfiguration.getOrdersUrl() + "/${body}"))
-      .to("http://orderDetail?authMethod=Basic&authUsername=" + prestashopConfiguration.getApiToken() + "&authPassword=&authenticationPreemptive=true")
+      .process(fetchOrder())
       .unmarshal(new JaxbDataFormat(JAXBContext.newInstance(Prestashop.class)))
       .setBody(simple("${body.toOrder()}"))
       .process(productIdsToHeaders())
@@ -71,6 +70,19 @@ public class ProcessOrder extends RouteBuilder {
       .delay(FIVE_SECONDS)
       .process(toInputStream())
       .to("seda:writeOrderDateToFile?blockWhenFull=true");
+  }
+
+  private Processor fetchOrder() {
+    return exchange -> {
+      String orderId = exchange.getIn().getBody(String.class);
+      String response = Unirest
+        .get(prestashopConfiguration.getOrdersUrl() + "/" + orderId)
+        .basicAuth(prestashopConfiguration.getApiToken(), EMPTY_STRING)
+        .asString()
+        .getBody();
+
+      exchange.getIn().setBody(new ByteArrayInputStream(response.getBytes()));
+    };
   }
 
   private Processor productIdsToHeaders() {
